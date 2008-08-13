@@ -143,6 +143,15 @@ class Plurk
   end
 
   def uid_to_nickname(uid)
+    nickname ||= -1
+    if uid == @uid
+      nickname = @nickname
+    else
+      for friend in @friends
+        nickname = friend[1]["nick_name"] if uid.to_s == friend[0]
+      end
+    end
+    return nickname
     # if uid = @uid return @nickname
     # if uid = friends.@uid, return friends.@nickname
     # return Unknown User uid
@@ -155,10 +164,25 @@ class Plurk
   end
 
   def get_responses(plurk_id)
+    if @logged_in
+      http = Net::HTTP.start(@plurk_paths[:http_base])
+      params = { "plurk_id" => plurk_id }
+      resp, data = http.request_post(@plurk_paths[:plurk_get_responses],
+                 hash_to_querystring(params),{"Cookie" => @cookie})
+      return data
+    end
     # post [:plurk_get_responses] ? plurk_id=plurk_id
   end
 
   def nickname_to_uid(nickname)
+    http = Net::HTTP.start(@plurk_paths[:http_base])
+    resp = http.request_get("/user/#{nickname}")
+    /var GLOBAL = \{.*"uid": ([0-9]+),.*\}/imu =~resp.body    
+    unless uid
+      return -1
+    else
+      return uid
+    end
     # get [:http_base]/user/nickname
     # if didn't match regexp match var GLOBAL "uid": xxx return -1
     # return match[1]
