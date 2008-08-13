@@ -176,6 +176,8 @@ class Plurk
   end
 
   def permalink_to_plurk_id(permalink)
+    /http:\/\/www.plurk.com\/p\/([a-zA-Z0-9]*)/ =~ permalink
+    return $1.to_i(36)
     # base36 = gsub "http://www.plurk.com/p/" ""
     # convert base36 to decimal
   end
