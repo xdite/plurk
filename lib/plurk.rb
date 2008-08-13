@@ -165,6 +165,14 @@ class Plurk
   end
 
   def uid_to_userinfo(uid)
+    http = Net::HTTP.start(@plurk_paths[:http_base])
+    params = { "user_id" => uid }
+    resp = http.request_get(@plurk_paths[:user_get_info]+"?"+hash_to_querystring(params),{"Cookie" => @cookie})
+    if resp.code == "500"
+      return []
+    else
+      return resp.body
+    end
     # array_profile = get [:user_get_info] ? user_id=uid
     # if respond code = 500 return []
     # return array_profile["body"]
