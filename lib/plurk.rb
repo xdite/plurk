@@ -171,6 +171,7 @@ class Plurk
   end
 
   def get_permalink(plurk_id)
+    return "http://www.plurk.com/p/#{plurk_id.to_s(36)}"
     # return "http://www.plurk.com/p/" + plurk_id to base36
   end
 
