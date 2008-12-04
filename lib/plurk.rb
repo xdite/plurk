@@ -238,6 +238,8 @@ class Plurk
       qstr
     end
 
+    alias :plurk :add_plurk
+
 end
 
 if __FILE__ == $0
