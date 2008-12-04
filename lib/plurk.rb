@@ -1,11 +1,11 @@
-require "net/http"
-require "cgi"
+require 'mechanize'
+require 'hpricot'
 
 class Plurk
-  attr_reader :logged_in, :uid, :nickname, :friends, :cookie
+  attr_reader :logged_in, :uid, :nickname, :friends, :cookies
   def initialize
     @plurk_paths = {
-      :http_base            => "www.plurk.com",
+      :http_base            => "http://www.plurk.com",
       :login                => "/Users/login",
       :get_completion       => "/Users/getCompletion",
       :plurk_add            => "/TimeLine/addPlurk",
@@ -28,18 +28,19 @@ class Plurk
   end
 
   def login(nickname, password)
-    http = Net::HTTP.start(@plurk_paths[:http_base])
-    resp, data = http.request_post(@plurk_paths[:login],
-                 hash_to_querystring({"redirect_page" => "main", "nick_name" => nickname, "password" => password}))
-    @cookie = resp.response["set-cookie"]
-    html = http.get(data)
-    /var GLOBAL = \{.*"uid": ([\d]+),.*\}/imu =~ html.body
-    @uid = Regexp.last_match[1]
-    resp, data = http.request_post(@plurk_paths[:get_completion],
-                 hash_to_querystring({"user_id" => @uid}))
-    @friends = json_to_ruby(data)
+    agent = WWW::Mechanize.new
+    agent.get(@plurk_paths[:http_base]) do |login_page|
+      timeline = login_page.form_with(:action => '/Users/login') do |form|
+        form.nick_name = nickname
+        form.password = password
+      end.submit
+      
+      /var GLOBAL = \{.*"uid": ([\d]+),.*\}/imu =~ timeline.body
+      @uid = Regexp.last_match[1]
+    end
+    
+    @cookies = agent.cookie_jar
     @nickname = nickname
-    http.finish
     @logged_in = true
   end
 
