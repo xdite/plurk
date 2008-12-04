@@ -1,5 +1,5 @@
-require 'mechanize'
 require 'hpricot'
+require 'mechanize'
 
 class Plurk
   attr_reader :logged_in, :uid, :nickname, :friends, :cookies
@@ -8,7 +8,7 @@ class Plurk
       :http_base            => "http://www.plurk.com",
       :login                => "/Users/login",
       :get_completion       => "/Users/getCompletion",
-      :plurk_add            => "/TimeLine/addPlurk",
+      :plurk_add            => "http://www.plurk.com/TimeLine/addPlurk",
       :plurk_respond        => "/Responses/add",
       :plurk_get            => "/TimeLine/getPlurks",
       :plurk_get_responses  => "/Responses/get2",
@@ -46,21 +46,28 @@ class Plurk
 
   def add_plurk(content="", qualifier="says", limited_to=[], no_comments=false, lang="en")
     if @logged_in
-      http = Net::HTTP.start(@plurk_paths[:http_base])
+      agent = WWW::Mechanize.new
+      agent.cookie_jar = @cookies
       no_comments = no_comments ? 1 : 0
+      
       params = {
-                 "posted" => Time.now.getgm.strftime("%Y-%m-%dT%H:%M:%S"),
-                 "qualifier" => qualifier,
-                 "content" => content[0...140],
-                 "lang" => lang,
-                 "uid" => @uid,
-                 "no_comments" => no_comments
-               }
-      params["limited_to"] = "[#{limited_to.join(",")}]" unless limited_to.empty?
-      resp, data = http.request_post(@plurk_paths[:plurk_add],
-                   hash_to_querystring(params),{"Cookie" => @cookie})
-      return data if /anti-flood|/.match(data)
-      content
+        :posted => Time.now.getgm.strftime("%Y-%m-%dT%H:%M:%S"),
+        :qualifier => qualifier,
+        :content => content[0...140],
+        :lang => lang,
+        :uid => @uid,
+        :no_comments => no_comments
+      }
+      params[:limited_to] = "[#{limited_to.join(",")}]" unless limited_to.empty?
+
+      agent.post(@plurk_paths[:plurk_add], params)
+
+      data = agent.current_page.body
+      return data if data =~ /anti-flood/
+      puts data
+      true
+    else
+      false
     end
   end
 
