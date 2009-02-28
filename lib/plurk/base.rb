@@ -223,8 +223,7 @@ module Plurk
       def statuses(doc)
         doc.inject([]) { |statuses, status| statuses << Status.new(status); statuses }
       end
-    
-      # Converts an hpricot doc to an array of users
+
       def users(doc)
         doc.inject([]) { |users, user| users << User.new(user); users }
       end
