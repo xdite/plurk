@@ -126,7 +126,7 @@ module Plurk
     end
 
     def unblock_user(uid)
-      return false unless @logged_id      
+      return false unless @logged_in    
       params = {
         :friend_id => uid
       } 
@@ -135,7 +135,7 @@ module Plurk
     end
     
     def make_fan(uid)
-      return false unless @logged_id  
+      return false unless @logged_in
       params = {
         :friend_id => uid
       }
@@ -144,7 +144,7 @@ module Plurk
     end
 
     def allow_friend(uid)
-      return false unless @logged_id  
+      return false unless @logged_in
       params = {
         :friend_id => uid
       }
@@ -153,7 +153,7 @@ module Plurk
     end
 
     def get_blocked_users(offset = 0)
-      return false unless @logged_id  
+      return false unless @logged_in
       params = {
         :offset => offset,
         :user_id => @uid
@@ -163,7 +163,7 @@ module Plurk
     end
 
     def mute_plurk(plurk_id, setmute)
-      return false unless @logged_id  
+      return false unless @logged_in
       params = {
         :plurk_id => plurk_id,
         :value => setmute
@@ -173,7 +173,7 @@ module Plurk
     end
 
     def get_unread_plurks(fetch_responses=false)
-      return false unless @logged_id  
+      return false unless @logged_in
       params = {
         :fetch_responses => fetch_responses
       }
@@ -182,7 +182,7 @@ module Plurk
     end
 
     def get_plurks(uid=nil, date_from=nil, date_offset=nil, fetch_responses=false)
-      return false unless @logged_id  
+      return false unless @logged_in
       uid ||= @uid  
       params = {
         :user_id =>@uid,
@@ -195,7 +195,7 @@ module Plurk
     end
 
     def deny_friend(uid)
-      return false unless @logged_id  
+      return false unless @logged_in
       params = {
         :friend_id => uid
       }
@@ -208,7 +208,7 @@ module Plurk
     end
 
     def get_alerts
-      return false unless @logged_id  
+      return false unless @logged_in
 
       data = request("/Notifications", :method => :get)
       @result = []
