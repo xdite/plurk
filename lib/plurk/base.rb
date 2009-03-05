@@ -33,7 +33,7 @@ module Plurk
 
     
     def add_plurk(content="", qualifier="says", limited_to=[], no_comments=false, lang="en")
-      return false unless @logged_id
+      return false unless @logged_in
       no_comments = no_comments ? 1 : 0
         
       params = {
@@ -62,7 +62,7 @@ module Plurk
       return $1.to_i(36)
     end
     def delete_plurk(plurk_id)
-      return false unless @logged_id
+      return false unless @logged_in
       params = {
         :plurk_id => plurk_id
       }
@@ -72,7 +72,7 @@ module Plurk
     end    
 
     def respond_to_plurk(plurk_id, lang, qualifier, content)
-      return false unless @logged_id
+      return false unless @logged_in
       params = {
         :plurk_id => plurk_id,
         :uid => @uid,
@@ -97,7 +97,7 @@ module Plurk
 
 
     def get_responses(plurk_id)
-      return false unless @logged_id
+      return false unless @logged_in
       params = {
         :plurk_id => plurk_id
       }      
@@ -116,7 +116,7 @@ module Plurk
 
     
     def block_user(uid)
-      return false unless @logged_id
+      return false unless @logged_in
       params = {
         :block_uid => uid
       } 
