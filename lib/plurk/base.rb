@@ -46,8 +46,9 @@ module Plurk
       }
 
       params[:limited_to] = "[#{limited_to.join(",")}]" unless limited_to.empty?    
-      data = plurk_to_json(request("/TimeLine/addPlurk", :method => :post , :params => params))["plurk"]
-        
+      #data = plurk_to_json(request("/TimeLine/addPlurk", :method => :post , :params => params))["plurk"]
+      data = plurk_to_json(request("/TimeLine/addPlurk", :method => :post , :params => params))
+      #return data
       return Status.new(data)
       # if data =~ /anti-flood/ # ???
     end
@@ -233,15 +234,19 @@ module Plurk
       end
     
       def request(path, options = {})
-        agent = WWW::Mechanize.new
-        agent.cookie_jar = @info[:cookies]
-        case options[:method].to_s
-          when "get"
-            agent.get(@api_host+path, options[:params])
-          when "post"
-            agent.post(@api_host+path, options[:params])
+        begin
+          agent = WWW::Mechanize.new
+          agent.cookie_jar = @cookies
+          case options[:method].to_s
+            when "get"
+              agent.get(@api_host+path, options[:params])
+            when "post"
+              agent.post(@api_host+path, options[:params])
+          end
+          return agent.current_page.body
+        rescue WWW::Mechanize::ResponseCodeError => ex
+          raise Unavailable, ex.response_code
         end
-        return agent.current_page.body
       end
       
       def plurk_to_json(json)

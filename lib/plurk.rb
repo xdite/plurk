@@ -8,5 +8,5 @@ require 'plurk/user'
 require 'plurk/response'
 
 module Plurk
-
+    class Unavailable < StandardError; end
 end
