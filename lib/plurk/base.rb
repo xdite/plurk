@@ -182,13 +182,13 @@ module Plurk
       return data
     end
 
-    def get_plurks(uid=nil, date_from=nil, date_offset=nil, fetch_responses=false)
+    def get_plurks(uid=nil, date_from=Time.now, date_offset=Time.now, fetch_responses=false)
       return false unless @logged_in
-      uid ||= @uid  
+      uid ||= @uid
       params = {
-        :user_id =>@uid,
-        :date_offset => date_offset.strftime("%Y-%m-%dT%H:%M:%S")  || Time.now.getgm.strftime("%Y-%m-%dT%H:%M:%S"),
-        :from_date => date_from.getgm.strftime("%Y-%m-%dT%H:%M:%S") || Time.now.getgm.strftime("%Y-%m-%dT%H:%M:%S"),
+        :user_id => uid,
+        :from_date => date_from.getgm.strftime("%Y-%m-%dT%H:%M:%S"),
+        :date_offset => date_offset.getgm.strftime("%Y-%m-%dT%H:%M:%S"),
         :fetch_responses => fetch_responses,
       }
       data = statuses(plurk_to_json(request("/TimeLine/getPlurks", :method => :post, :params => params )))
