@@ -194,6 +194,35 @@ module Plurk
       data = statuses(plurk_to_json(request("/TimeLine/getPlurks", :method => :post, :params => params )))
       return data
     end
+    #Proposed new git_plurks
+    # * Made uid manditory so that mistakes like plurk.get_plurks_new(:limit => 1) 
+    #   would not happen.
+    # * Also note that you would not need to be logged on to use get_plurks
+    #TODO:
+    # * Add the filtering for limit in the request
+    def get_plurks_new(uid,options = {})
+      options[:from_date]       ||= Time.now
+      options[:date_offset]     ||= Time.now
+      options[:fetch_responses] ||= false
+      #replace the following with get_plurks body sans the first line
+      data = get_plurks(uid,options[:from_date],options[:date_offset],options[:fetch_responses])
+      #Since the coding style uses return follow it
+      data = data.first(options[:limit]) unless options[:limit].nil?
+      return data
+    end
+
+    def deny_friend(uid)
+      return false unless @logged_in
+      params = {
+        :friend_id => uid
+      }
+      data = request("/Notifications/deny", :method => :post, :params =>  params)
+      if data == "ok"
+        return true
+      else
+        return false
+      end
+    end
 
     def deny_friend(uid)
       return false unless @logged_in
