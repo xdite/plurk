@@ -10,7 +10,7 @@ module Plurk
       agent = WWW::Mechanize.new
       begin
       agent.get(@api_host) do |login_page|
-        timeline = login_page.form_with(:action => '/Users/login') do |form|
+        timeline = login_page.form_with(:action => 'https://www.plurk.com/Users/login') do |form|
           form.nick_name = @info[:nickname]
           form.password = @info[:password]
         end.submit
