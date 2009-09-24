@@ -92,7 +92,7 @@ module Plurk
     
     def nickname_to_uid(nickname)
       data = request("/user/#{nickname}", :method => :get )
-      /\{"page_user": \{.*"page_title": null, "uid": ([0-9]+),.+\}\}/imu =~ data
+      /\{"page_user": \{.*"page_title": ".*", "uid": ([0-9]+),.+\}\}/imu =~ data
       return uid = ($1)? $1 : -1
     end
 
